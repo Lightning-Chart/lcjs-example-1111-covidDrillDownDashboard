@@ -786,7 +786,7 @@ dashboard.addEventListener('resize', (event) => {
                     .setBackground((background) => background.setFillStyle(emptyFill).setStrokeStyle(emptyLine))
 
                 chart.addEventListener('layoutchange', (event) => {
-                    dashboardTitle.setOrigin(UIOrigins.LeftTop).setPosition({ x: 140, y: event.height - 10 })
+                    dashboardTitle.setOrigin(UIOrigins.LeftTop).setPosition({ x: 140, y: event.chartHeight - 10 })
                 })
 
                 // Add selector for displaying relative / actual values.
