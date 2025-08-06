@@ -223,6 +223,7 @@ dashboard.addEventListener('resize', (event) => {
 
         const timelineChart = dashboard
             .createChartXY({
+                legend: { visible: false },
                 columnIndex: 0,
                 rowIndex: 1,
             })
@@ -240,7 +241,7 @@ dashboard.addEventListener('resize', (event) => {
             .setTextFormatter((time) => new Date(time).toLocaleDateString('fin', {}))
         synchronizeAxisIntervals(timelineChart.getDefaultAxisX(), timeLineHighlighterAxis)
 
-        timelineChart.addPointLineAreaSeries({ dataPattern: 'ProgressiveX' }).setAreaFillStyle(emptyFill).appendJSON(newCasesHistoryDataXY)
+        timelineChart.addLineSeries({}).appendJSON(newCasesHistoryDataXY)
         timelineChart
             .getDefaultAxisY()
             .setTitle('New daily cases')
@@ -254,8 +255,7 @@ dashboard.addEventListener('resize', (event) => {
             .setTitleFont((font) => font.setSize(12))
             .setInterval({ start: 0, end: 100 })
         timelineChart
-            .addPointLineAreaSeries({ dataPattern: 'ProgressiveX', yAxis: axisVaccinated })
-            .setAreaFillStyle(emptyFill)
+            .addLineSeries({ yAxis: axisVaccinated })
             .appendJSON(vaccinatedPerHundredHistoryDataXY)
             .setStrokeStyle(
                 new SolidLine({
@@ -330,6 +330,7 @@ dashboard.addEventListener('resize', (event) => {
 
         const mapChart = dashboard
             .createMapChart({
+                legend: { visible: false },
                 columnIndex: 0,
                 rowIndex: 0,
                 type: mapType,
@@ -340,6 +341,7 @@ dashboard.addEventListener('resize', (event) => {
 
         const mapChartXY = dashboard
             .createChartXY({
+                legend: { visible: false },
                 columnIndex: 0,
                 rowIndex: 0,
             })
@@ -375,8 +377,12 @@ dashboard.addEventListener('resize', (event) => {
         )
 
         const scatterSeries = mapChartXY
-            .addPointLineAreaSeries({ dataPattern: null, sizes: true, lookupValues: true, ids: true })
-            .setStrokeStyle(emptyLine)
+            .addPointSeries({
+                schema: {
+                    x: { pattern: null },
+                    y: { pattern: null },
+                },
+            })
             .setPointFillStyle(new PalettedFill({ lut: lutNewCasesPerMillion }))
             .setPointerEvents(false)
 
@@ -421,7 +427,7 @@ dashboard.addEventListener('resize', (event) => {
                             smoothedNewCasesPerMillion === 0
                                 ? 0
                                 : clampNumber((25 * smoothedNewCasesPerMillion) / 1000, mapType === 'World' ? 1 : 5, 25)
-                        scatterSeries.add({
+                        scatterSeries.appendSample({
                             id: iRegion,
                             x: longitude,
                             y: latitude,
@@ -461,6 +467,7 @@ dashboard.addEventListener('resize', (event) => {
         container.append(containerOverlayCursor)
         const chartOverlayCursor = lightningChart()
             .ChartXY({
+                legend: { visible: false },
                 container: containerOverlayCursor,
                 theme,
             })
@@ -493,11 +500,7 @@ dashboard.addEventListener('resize', (event) => {
                 .setInterval({ start: 0, end: highValue, stopAxisAfter: false })
                 .setScrollStrategy(AxisScrollStrategies.expansion)
             return {
-                series: chartOverlayCursor
-                    .addPointLineAreaSeries({ yAxis, dataPattern: 'ProgressiveX' })
-                    .setAreaFillStyle(emptyFill)
-                    .setPointFillStyle(emptyFill)
-                    .setStrokeStyle((stroke) => stroke.setFillStyle(fill)),
+                series: chartOverlayCursor.addLineSeries({ yAxis }).setStrokeStyle((stroke) => stroke.setFillStyle(fill)),
                 label: ChartOverlayItem(label).setTextFillStyle(fill),
                 valueLabel: chartOverlayCursor
                     .addUIElement(UIElementBuilders.TextBox, {
@@ -571,7 +574,7 @@ dashboard.addEventListener('resize', (event) => {
 
         mapChartXY.seriesBackground.addEventListener('pointermove', (event) => {
             const nearest = scatterSeries.solveNearest(event)
-            const region = regions[nearest?.id]
+            const region = regions[nearest?.sample.id]
             if (nearest && region) {
                 cursorTarget = { countryCode: region.ISO_A3, ...nearest }
                 cursorLastPointedCountry = cursorTarget.countryCode
@@ -617,7 +620,7 @@ dashboard.addEventListener('resize', (event) => {
                             y: sample[key] !== undefined ? sample[key] : NaN,
                         }))
                         .filter((sample) => !Number.isNaN(sample.y))
-                    series.clear().add(data)
+                    series.clear().appendJSON(data)
 
                     let lastValue
                     for (let i = data.length - 1; i >= 0; i -= 1) {
@@ -772,6 +775,7 @@ dashboard.addEventListener('resize', (event) => {
         ].map((trend, iTrend, _trends) => {
             const chart = dashboard
                 .createChartXY({
+                    legend: { visible: false },
                     columnIndex: 0,
                     rowIndex: iTrend,
                 })
@@ -836,12 +840,7 @@ dashboard.addEventListener('resize', (event) => {
                 axisY.setInterval({ start: 0, end: trend.maxY, stopAxisAfter: false }).setScrollStrategy(AxisScrollStrategies.expansion)
             }
 
-            const series = chart
-                .addPointLineAreaSeries({
-                    dataPattern: 'ProgressiveX',
-                })
-                .setAreaFillStyle(emptyFill)
-                .setName(`${countryInformation.name.common}`)
+            const series = chart.addLineSeries({}).setName(`${countryInformation.name.common}`)
             const dataXY = trend.dataSet.data
                 .map((sample) => ({
                     x: ISODateToTime(sample.date),
@@ -853,13 +852,7 @@ dashboard.addEventListener('resize', (event) => {
             const averageData = averagesData && averagesData[trend.property]
             let seriesAverage
             if (averageData) {
-                seriesAverage = chart
-                    .addPointLineAreaSeries({
-                        dataPattern: 'ProgressiveX',
-                    })
-                    .setAreaFillStyle(emptyFill)
-                    .setName('Global average')
-                    .appendJSON(averageData)
+                seriesAverage = chart.addLineSeries({}).setName('Global average').appendJSON(averageData)
                 const styleNormal = series.getStrokeStyle()
                 seriesAverage.setStrokeStyle(styleNormal.setFillStyle(styleNormal.getFillStyle().setA(100)))
             }
