@@ -23,13 +23,13 @@ LightningChart JS example which showcases combination of `MapChart` and `ChartXY
 
 [//]: # 'IMPORTANT: The assets will not show before README.md is built - relative path is different!'
 
-![](./assets/pic1.png)
+![Picture 1](./assets/pic1.png)
 
 The global number of daily cases as well as average vaccination coverage is displayed at the bottom. The active date that is displayed in the main chart above can be changed by dragging on the slider.
 
 [//]: # 'IMPORTANT: The assets will not show before README.md is built - relative path is different!'
 
-![](./assets/pic2.png)
+![Picture 2](./assets/pic2.png)
 
 By placing mouse cursor above the main chart, a popup chart will be displayed over the nearest country from the mouse location. This chart shows the previous 4 weeks data from the active date. Depending on availability, the following data will be shown:
 
@@ -42,7 +42,7 @@ The idea behind measurements relative to population is that the readings can be 
 
 [//]: # 'IMPORTANT: The assets will not show before README.md is built - relative path is different!'
 
-![](./assets/pic3.png)
+![Picture 3](./assets/pic3.png)
 
 **Drill-down to data**
 
@@ -52,7 +52,7 @@ In this view you can also compare a single country's data to the calculated aver
 
 [//]: # 'IMPORTANT: The assets will not show before README.md is built - relative path is different!'
 
-![](./assets/pic4.png)
+![Picture 4](./assets/pic4.png)
 
 Zooming back out can be done by double left-clicking.
 
